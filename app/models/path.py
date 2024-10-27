@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy import Column, Float, Integer, String
 from sqlalchemy.orm import relationship
 from app.db import Base
 
@@ -11,4 +11,5 @@ class Path(Base):
     origin_lon = Column(Float)
     total_length = Column(Float)
 
-    # todo: segments = relationship('Segment', back_populates='path')  # relationship to segments
+
+# todo: Path.segments = relationship('Segment', back_populates='path')  # relationship to segments

@@ -1,5 +1,15 @@
-from pydantic import BaseModel # pydantic is great for validating data from API requests and formatting responses
+from pydantic import BaseModel # pydantic validates data from API requests and formatting responses
 from typing import Optional
+
+class PathSchema(BaseModel):
+    path_id: int
+    name: str
+    origin_lat: float
+    origin_lon: float
+    total_length: float
+
+    class Config:
+        orm_mode = True #this allows Pydantic to work with SQLAlchemy objects
 
 # creating new path
 class PathCreate(BaseModel):
@@ -24,4 +34,4 @@ class PathResponse(BaseModel):
     total_length: float
 
     class Config:
-        orm_mode = True  # allows using ORM objects (like SQLAlchemy models) directly
+        orm_mode = True #this allows Pydantic to work with SQLAlchemy objects

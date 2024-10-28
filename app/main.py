@@ -1,3 +1,5 @@
+# purpose: starting fastapi server
+
 import uvicorn
 from app import app
 from config import HOST, PORT

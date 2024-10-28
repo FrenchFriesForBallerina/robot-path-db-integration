@@ -1,3 +1,5 @@
+# purpose: set up main api_router and include other routers
+
 from fastapi import APIRouter
 from .paths import router as paths_router
 #todo: from .segments import router as segments_router

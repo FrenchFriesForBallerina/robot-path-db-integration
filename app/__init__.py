@@ -1,3 +1,7 @@
+# purpose: define fastapi app instance,
+# make sure all paths are routed
+# shutdown logic
+
 import subprocess
 from fastapi import FastAPI
 from app.db import initialize_db
@@ -14,6 +18,11 @@ except Exception as e:
 
 # register the aggregated API router
 app.include_router(api_router)
+
+# main root endpoint for the entire application
+@app.get("/") 
+async def root():
+    return {"message": "APPLICATION ROOT, hello from main"}
 
 # shutdown event handler
 @app.on_event("shutdown")

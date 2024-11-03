@@ -1,11 +1,12 @@
 from fastapi.testclient import TestClient
 from app.main import app
+import random
 
 client = TestClient(app)
 
 def test_get_paths():
-    response = client.get("/paths/all")
-    assert response.status_code == 200 # http response code is 200 OK
+    response = client.get("/paths")
+    assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}"
     print("Response JSON:", response.json())  # JSON response for debugging
 
     assert isinstance(response.json(), list) # response type is list
@@ -22,28 +23,64 @@ def test_get_paths():
         assert isinstance(path["origin_lat"], float)
         assert isinstance(path["origin_lon"], float)
         assert isinstance(path["total_length"], float)
- 
-'''
+
+def test_get_path():
+    # first post so that there is a known path
+    response = client.post("/paths", json={
+        "name": "Sample Path",
+        "origin_lat": random.uniform(58, 60),
+        "origin_lon": random.uniform(58, 60),
+        "total_length": round(random.uniform(10, 200), 3)
+    })
+
+    path_id = response.json()["path_id"]
+
+    response = client.get(f"/paths/{path_id}")
+    assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}"
+    assert response.json()["path_id"] == path_id
 
 def test_create_path():
     response = client.post("/paths", json={
         "name": "Test Path",
-        "origin_lat": 0.0,
-        "origin_lon": 0.0,
-        "total_length": 100.0
+        "origin_lat": random.uniform(58, 60),
+        "origin_lon": random.uniform(58, 60),
+        "total_length": round(random.uniform(10, 200), 3)
     })
-    assert response.status_code == 200
+    print('created new path')
+    assert response.status_code == 201, f"Expected status code 201, but got {response.status_code}"
     assert response.json()["name"] == "Test Path"
 
+def test_update_path():
+    create_response = client.post("/paths", json={
+        "name": "Path to Update",
+        "origin_lat": random.uniform(58, 60),
+        "origin_lon": random.uniform(58, 60),
+        "total_length": round(random.uniform(10, 200), 3)
+    })
+    path_id = create_response.json()["path_id"]
 
-def test_get_path():
-    response = client.get("/paths/1")
-    assert response.status_code == 200
-    assert response.json()["path_id"] == 1
+    response = client.put(f"/paths/{path_id}", json={
+        "name": "Modified Path",
+        "origin_lat": random.uniform(58, 60),
+        "origin_lon": random.uniform(58, 60),
+        "total_length": round(random.uniform(10, 200), 3)
+    })
+    assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}"
+    assert response.json()["name"] == "Modified Path", "The path name was not updated as expected."
+ 
+def test_delete_path():
+    create_response = client.post("/paths", json={
+        "name": "Path to Delete",
+        "origin_lat": random.uniform(58, 60),
+        "origin_lon": random.uniform(58, 60),
+        "total_length": round(random.uniform(10, 200), 3)
+    })
+    path_id = create_response.json()["path_id"]
 
-def test_create_path():
-    response = client.post("/paths", json={"name": "Test Path 0", "origin_lat": 0.0, "origin_lon": 0.0, "total_length": 100.0})
-    assert response.status_code == 200
-    assert response.json()["name"] == "Test Path"
+    response = client.delete(f"/paths/{path_id}")
+    print(f"Deleted path with id {path_id}.")
+    assert response.status_code == 204, f"Expected status code 204, but got {response.status_code}" 
 
-'''
+    # verify the path doesn't exist anymore
+    response = client.get(f"/paths/{path_id}")
+    assert response.status_code == 404, f"Expected status code 404 for non-existent path, but got {response.status_code}"

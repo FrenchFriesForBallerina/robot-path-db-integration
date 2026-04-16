@@ -3,11 +3,11 @@
 This project is a modular, scalable API being built with FastAPI and SQLAlchemy designed for logging and analyzing path and tuning parameters data from robotics systems.
 
 ## State of Project
-Currently a work-in-progress, with features being added regularly. Once the API construction is finished, the next phase is integration to a robotics system to collect real-time data from sensors and analyse it. 
+Currently an archived project. 
 
 ## Overview
 
-The main goal of the project is to implement:
+The project implements:
 
 - efficient database interactions
 - clean architecture
